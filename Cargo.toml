@@ -1,0 +1,16 @@
+[package]
+name = "wave"
+version = "0.1.0"
+authors = ["Naoki Hori"]
+description = "Wave Equation Solver in Browsers"
+repository = "https://github.com/NaokiHori/Wave"
+edition = "2021"
+publish = false
+license-file = "LICENSE"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[dependencies]
+wasm-bindgen = { version = "0.2.95" }
