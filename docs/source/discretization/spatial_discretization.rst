@@ -1,12 +1,12 @@
 We spatially discretize the equations in the spectral domain.
-Instead of the superposition of infinite number of modes, we truncate it at the wavenumber of :math:`N - 1`; namely
+Instead of the superposition of infinite number of modes, we pick up :math:`N` modes:
 
 .. math::
 
-    \mysum{k}{0}{\infty}
+    \mysum{k}{-\infty}{\infty}
     Q_k
     \approx
-    \mysum{k}{0}{N - 1}
+    \mysum{k}{-N / 2}{N / 2 - 1}
     Q_k.
 
 Note that the transformation between physical and spectral representations leads to
@@ -17,26 +17,20 @@ Note that the transformation between physical and spectral representations leads
     &
     =
     \frac{1}{N}
-    \left\{
-        \mysum{k}{0}{N - 2}
-        Q_{k}
-        \sin \left( \frac{\pi \left( n + \frac{1}{2} \right) \left( k + 1 \right)}{N} \right)
-        +
-        \left( - 1 \right)^{n}
-        Q_{N - 1}
-    \right\}
+    \mysum{k}{0}{N - 1}
+    Q_k
+    \exp \left( \wavenumber{2 \pi}{n k}{N} I \right)
     \equiv
-    \dstiii{Q_k},
+    \dftiii{Q_k},
 
     Q_k
     &
     =
-    2
-    \mysum{k}{0}{N - 1}
+    \mysum{n}{0}{N - 1}
     q_n
-    \sin \left( \frac{\pi \left( n + \frac{1}{2} \right) \left( k + 1 \right)}{N} \right)
+    \exp \left( \wavenumber{- 2 \pi}{n k}{N} I \right)
     \equiv
-    \dstii{q_n},
+    \dftii{q_n},
 
 which are known as the discrete sine transform of type III and II, respectively.
 

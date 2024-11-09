@@ -1,11 +1,18 @@
 mod converter;
 mod coordinate;
-mod init_field;
+mod field;
 mod integrate;
+pub mod metrics;
+mod source;
+
+use super::random::Random;
+use converter::Converter;
+use field::Field;
+use metrics::Metrics;
+use source::Source;
 
 pub const NDIMS: usize = 2;
 
-#[derive(Clone)]
 pub struct Config {
     pub lengths: [f64; NDIMS],
     pub nitems: [usize; NDIMS],
@@ -15,48 +22,67 @@ pub struct Config {
 
 pub struct Simulator {
     config: Config,
-    converter: converter::Converter,
-    pos: Vec<f64>,
-    vel: Vec<f64>,
-    acc: Vec<f64>,
-    pos_phys: Vec<f64>,
+    rng: Random,
+    converter: Converter,
+    field: Field,
+    source: Source,
+    dt: f64,
+    pub iter_max: u32,
 }
 
 impl Simulator {
-    pub fn new(config: &Config) -> Self {
-        let nitems_total: usize = config.nitems[0] * config.nitems[1];
-        let mut pos = vec![0f64; nitems_total];
-        let mut vel = vec![0f64; nitems_total];
-        let mut acc = vec![0f64; nitems_total];
-        let pos_phys = vec![0f64; nitems_total];
-        let mut converter = converter::Converter::new(&config.nitems);
-        init_field::init_field(config, &mut converter, &mut pos, &mut vel, &mut acc);
+    pub fn new(random_seed: u64, config: Config, dt_max: f64) -> Self {
+        let mut rng = Random::new(random_seed);
+        let mut converter = Converter::new(&config.nitems);
+        let field = Field::new(&config, &mut converter);
+        let source = Source::new(&config, &mut rng);
+        let mut dt = dt_max;
+        decide_dt(&config, &mut dt);
+        let iter_max: u32 = (dt_max / dt).ceil() as u32;
         Self {
-            config: config.clone(),
+            config,
+            rng,
             converter,
-            pos,
-            vel,
-            acc,
-            pos_phys,
+            field,
+            source,
+            dt,
+            iter_max,
         }
     }
 
-    pub fn integrate(&mut self, dt_max: f64, time: &mut f64) {
-        let mut dt = dt_max;
-        integrate::integrate(
-            &self.config,
-            *time,
-            &mut self.pos,
-            &mut self.vel,
-            &mut self.acc,
-            &mut dt,
-        );
-        *time += dt;
+    pub fn integrate(&mut self, time: &mut f64) {
+        for _ in 0..self.iter_max {
+            integrate::integrate(
+                &self.config,
+                &mut self.rng,
+                &mut self.field,
+                &mut self.source,
+                self.dt,
+            );
+            *time += self.dt;
+        }
     }
 
-    pub fn pos(&mut self) -> &[f64] {
-        let pos_phys: &mut [f64] = &mut self.pos_phys;
-        self.converter.freq_to_phys(&self.pos, pos_phys);
+    pub fn get_metrics(&mut self) -> Metrics {
+        metrics::get(self)
+    }
+
+    pub fn get_pos(&mut self) -> &[f64] {
+        let pos_phys: &mut [f64] = &mut self.field.buf;
+        self.converter.freq_to_phys(&self.field.pos, pos_phys);
         pos_phys
+    }
+
+    pub fn get_dt(&self) -> f64 {
+        self.dt
+    }
+}
+
+fn decide_dt(config: &Config, dt: &mut f64) {
+    // NOTE: maximum dt is given by the user
+    for dim in 0..NDIMS {
+        let length: f64 = config.lengths[dim];
+        let nitems: usize = config.nitems[dim];
+        *dt = (*dt).min(length / nitems as f64 / config.param_c2.sqrt());
     }
 }

@@ -10,4 +10,4 @@ Visit [here](https://naokihori.github.io/Wave/index.html).
 
 ## Documentation
 
-Detailed documentation can be found [here](https://naokihori.github.io/Wave/docs/index.html).
+Visit [here](https://naokihori.github.io/Wave/docs/index.html).

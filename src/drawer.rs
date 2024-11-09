@@ -50,28 +50,28 @@ fn value_to_color(value: f64, color: &mut [u8]) {
         value as u8
     }
     // blue-black-red
-    //let l: f64 = 0.75f64;
-    //if value < 0f64 {
-    //    color[0] = convert(0f64 - l * value);
-    //} else if value < 0.5f64 {
-    //    color[0] = convert(0f64 + 2f64 * value);
-    //} else {
-    //    color[0] = 255u8;
-    //}
-    //if value < 0f64 {
-    //    color[1] = convert(0f64 - l * value);
-    //} else {
-    //    color[1] = convert(0f64 + l * value);
-    //}
-    //if value < -0.5f64 {
-    //    color[2] = 255u8;
-    //} else if value < 0f64 {
-    //    color[2] = convert(0f64 - 2f64 * value);
-    //} else {
-    //    color[2] = convert(0f64 + l * value);
-    //}
+    let l: f64 = 0.75f64;
+    if value < 0f64 {
+        color[0] = convert(0f64 - l * value);
+    } else if value < 0.5f64 {
+        color[0] = convert(0f64 + 2f64 * value);
+    } else {
+        color[0] = 255u8;
+    }
+    if value < 0f64 {
+        color[1] = convert(0f64 - l * value);
+    } else {
+        color[1] = convert(0f64 + l * value);
+    }
+    if value < -0.5f64 {
+        color[2] = 255u8;
+    } else if value < 0f64 {
+        color[2] = convert(0f64 - 2f64 * value);
+    } else {
+        color[2] = convert(0f64 + l * value);
+    }
     // monochrome
-    color[0] = convert(value);
-    color[1] = convert(value);
-    color[2] = convert(value);
+    //color[0] = convert(value);
+    //color[1] = convert(value);
+    //color[2] = convert(value);
 }

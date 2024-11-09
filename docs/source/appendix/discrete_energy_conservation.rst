@@ -31,7 +31,7 @@ We define the discrete total kinetic and potential energies as
     &
     =
     \mysum{k}{0}{N - 1}
-    \frac{L}{2}
+    L
     \frac{1}{2}
     \rho
     \left( \kvel{k}{} \right)^2,
@@ -40,7 +40,7 @@ We define the discrete total kinetic and potential energies as
     &
     =
     \mysum{k}{0}{N - 1}
-    \frac{L}{2}
+    L
     \frac{1}{2}
     \rho
     C_k
@@ -56,7 +56,7 @@ Their differentiations (in time) yield
     &
     =
     \mysum{k}{0}{N - 1}
-    \frac{L}{2}
+    L
     \frac{1}{2}
     \rho
     \frac{
@@ -68,7 +68,7 @@ Their differentiations (in time) yield
     &
     =
     \mysum{k}{0}{N - 1}
-    \frac{L}{2}
+    L
     \rho
     \frac{
         \kvel{k}{n + 1}
@@ -84,7 +84,7 @@ Their differentiations (in time) yield
     &
     =
     \mysum{k}{0}{N - 1}
-    \frac{L}{2}
+    L
     \rho
     \dif{\kvel{k}{}}{t}
     \ave{\kvel{k}{}},
@@ -93,7 +93,7 @@ Their differentiations (in time) yield
     &
     =
     \mysum{k}{0}{N - 1}
-    \frac{L}{2}
+    L
     \frac{1}{2}
     \rho
     C_k
@@ -106,7 +106,7 @@ Their differentiations (in time) yield
     &
     =
     \mysum{k}{0}{N - 1}
-    \frac{L}{2}
+    L
     \rho
     C_k
     \dif{\kpos{k}{}}{t}
@@ -115,7 +115,7 @@ Their differentiations (in time) yield
     &
     =
     \mysum{k}{0}{N - 1}
-    \frac{L}{2}
+    L
     \rho
     C_k
     \ave{\kvel{k}{}}
@@ -136,7 +136,7 @@ and, as a consequence:
     &
     =
     \mysum{k}{0}{N - 1}
-    \frac{L}{2}
+    L
     \rho
     \ave{\kvel{k}{}}
     \left(

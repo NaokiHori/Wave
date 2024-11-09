@@ -21,31 +21,21 @@ macros["dif"] = ["{\\frac{\\delta #1}{\\delta #2}}", 2]
 macros["vat"] = ["{\\left. #1 \\right|_{#2}}", 2]
 macros["mysum"] = ["\\sum_{{#1} = {#2}}^{#3}", 3]
 macros["myint"] = ["{\\int_{#1}^{#2} {#3} {d#4}}", 4]
-macros["wavenumber"] = ["\\frac{\\pi {#1} #2}{#3}", 3]
+macros["wavenumber"] = ["{{#1} \\frac{#2}{#3}}", 3]
 macros["intfactor"] = ["\\epsilon_k \\left( #1 \\right)", 1]
-macros["dstii"] = ["{\\mathcal{S} \\left[ #1 \\right]}", 1]
-macros["dstiii"] = ["{\\mathcal{S}^{-1} \\left[ #1 \\right]}", 1]
+macros["dftii"] = ["{\\mathcal{F} \\left[ #1 \\right]}", 1]
+macros["dftiii"] = ["{\\mathcal{F}^{-1} \\left[ #1 \\right]}", 1]
 mathjax3_config = {"TeX": {"Macros": macros}}
 
 html_theme = "alabaster"
 html_theme_options = {
         "description": "A simple energy-consistent wave equation solver",
-        "fixed_sidebar": "false",
         "github_banner": "false",
         "github_button": "true",
         "github_count": "true",
         "github_repo": "Wave",
         "github_type": "star",
         "github_user": "NaokiHori",
-        "navigation_with_keys": "true",
-        "nosidebar": "false",
-        "page_width": "95vw",
-        "show_powered_by": "true",
-        "show_related": "false",
-        "show_relbars": "false",
-        "sidebar_collapse": "true",
-        "sidebar_includehidden": "false",
-        "sidebar_width": "25vw",
         "gray_1": "#bbb",
         "gray_2": "#111",
         "gray_3": "#555",

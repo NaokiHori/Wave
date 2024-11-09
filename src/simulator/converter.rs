@@ -1,21 +1,25 @@
-mod dst;
+mod complex;
+mod rdft;
 
 use super::NDIMS;
 
-use dst::DstPlan;
+use rdft::RdftPlan;
 
 pub struct Converter {
-    dst_plans: [DstPlan; NDIMS],
+    rdft_plans: [RdftPlan; NDIMS],
     nitems: [usize; NDIMS],
     buffer: Vec<f64>,
 }
 
 impl Converter {
     pub fn new(nitems: &[usize; NDIMS]) -> Self {
-        let dst_plans: [dst::DstPlan; NDIMS] = [DstPlan::new(nitems[0]), DstPlan::new(nitems[1])];
+        let rdft_plans: [RdftPlan; NDIMS] = [
+            RdftPlan::new(nitems[0]).unwrap(),
+            RdftPlan::new(nitems[1]).unwrap(),
+        ];
         let buffer = vec![0f64; nitems[0] * nitems[1]];
         Self {
-            dst_plans,
+            rdft_plans,
             nitems: *nitems,
             buffer,
         }
@@ -27,11 +31,11 @@ impl Converter {
         let buffer = &mut self.buffer;
         buffer[..nitems_total].copy_from_slice(&phys[..nitems_total]);
         for j in 0..nitems[1] {
-            self.dst_plans[0].exec_f(&mut buffer[j * nitems[0]..]);
+            self.rdft_plans[0].exec_f(&mut buffer[j * nitems[0]..]);
         }
         transpose(nitems[0], nitems[1], buffer, freq);
         for i in 0..nitems[0] {
-            self.dst_plans[1].exec_f(&mut freq[i * nitems[1]..]);
+            self.rdft_plans[1].exec_f(&mut freq[i * nitems[1]..]);
         }
     }
 
@@ -41,11 +45,11 @@ impl Converter {
         let buffer = &mut self.buffer;
         buffer[..nitems_total].copy_from_slice(&freq[..nitems_total]);
         for i in 0..nitems[0] {
-            self.dst_plans[1].exec_b(&mut buffer[i * nitems[1]..]);
+            self.rdft_plans[1].exec_b(&mut buffer[i * nitems[1]..]);
         }
         transpose(nitems[1], nitems[0], buffer, phys);
         for j in 0..nitems[1] {
-            self.dst_plans[0].exec_b(&mut phys[j * nitems[0]..]);
+            self.rdft_plans[0].exec_b(&mut phys[j * nitems[0]..]);
         }
     }
 }
@@ -59,14 +63,15 @@ fn transpose(nx: usize, ny: usize, bef: &[f64], aft: &mut [f64]) {
 }
 
 #[cfg(test)]
-mod test_transpose {
+mod test {
+    use super::transpose;
     #[test]
     fn check() {
         let nx = 3usize;
         let ny = 2usize;
         let bef = [0f64, 1f64, 2f64, 3f64, 4f64, 5f64];
         let mut aft = vec![0f64; nx * ny];
-        super::transpose(nx, ny, &bef, &mut aft);
+        transpose(nx, ny, &bef, &mut aft);
         assert!(0f64 == aft[0]);
         assert!(3f64 == aft[1]);
         assert!(1f64 == aft[2]);

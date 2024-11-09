@@ -136,7 +136,7 @@ Similarly, the third term can be reformulated by adopting the integration by par
 
 where the former term is again the boundary contribution whereas the latter denotes the energy dissipation.
 
-The fourth term is simply the energy input due to the external factor and remain as it is.
+The fourth term simply denotes the energy input due to the external factor, and we remain it as it is.
 
 In summary, we obtain
 

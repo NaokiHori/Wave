@@ -14,3 +14,6 @@ path = "src/lib.rs"
 
 [dependencies]
 wasm-bindgen = { version = "0.2.95" }
+
+[dev-dependencies]
+rand = { version = "0.8.5" }

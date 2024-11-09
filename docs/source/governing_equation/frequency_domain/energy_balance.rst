@@ -17,23 +17,23 @@ The kinetic and potential energies using the variables in frequency domain lead 
         \frac{1}{2}
         \rho
         \left(
-            \mysum{k}{0}{\infty}
+            \mysum{k}{-\infty}{\infty}
             \kvel{k}{}
-            \sin \left( \wavenumber{\left( k + 1 \right)}{x}{L} \right)
+            \exp \left( \wavenumber{2 \pi}{k x}{L} I \right)
         \right)
         \left(
-            \mysum{l}{0}{\infty}
+            \mysum{l}{-\infty}{\infty}
             \kvel{l}{}
-            \sin \left( \wavenumber{\left( l + 1 \right)}{x}{L} \right)
+            \exp \left( \wavenumber{2 \pi}{l x}{L} I \right)
         \right)
     }{x}
 
     &
     =
-    \mysum{k}{0}{\infty}
-    \frac{L}{2}
+    \mysum{k}{-\infty}{\infty}
     \frac{1}{2}
     \rho
+    L
     \left( \kvel{k}{} \right)^2,
 
     U
@@ -54,26 +54,26 @@ The kinetic and potential energies using the variables in frequency domain lead 
         \rho
         c^2
         \left(
-            \mysum{k}{0}{\infty}
+            \mysum{k}{-\infty}{\infty}
             \kpos{k}{}
-            \wavenumber{\left( k + 1 \right)}{}{L}
-            \cos \left( \wavenumber{\left( k + 1 \right)}{x}{L} \right)
+            \wavenumber{2 \pi}{k}{L} I
+            \exp \left( \wavenumber{2 \pi}{k x}{L} I \right)
         \right)
         \left(
-            \mysum{l}{0}{\infty}
+            \mysum{l}{-\infty}{\infty}
             \kpos{l}{}
-            \wavenumber{\left( l + 1 \right)}{}{L}
-            \cos \left( \wavenumber{\left( l + 1 \right)}{x}{L} \right)
+            \wavenumber{2 \pi}{l}{L} I
+            \exp \left( \wavenumber{2 \pi}{l x}{L} I \right)
         \right)
     }{x}
 
     &
     =
-    \mysum{k}{0}{\infty}
-    \frac{L}{2}
+    \mysum{k}{-\infty}{\infty}
     \frac{1}{2}
     \rho
-    C_{k}
+    L
+    C_k
     \left( \kpos{k}{} \right)^2,
 
 respectively.
@@ -85,10 +85,10 @@ Higher dimensional cases can be derived in the same manner:
     K
     &
     =
-    \mysum{k_y}{0}{\infty}
-    \mysum{k_x}{0}{\infty}
-    \frac{L_x}{2}
-    \frac{L_y}{2}
+    \mysum{k_y}{-\infty}{\infty}
+    \mysum{k_x}{-\infty}{\infty}
+    L_x
+    L_y
     \frac{1}{2}
     \rho
     \left( \kvel{k_x, k_y}{} \right)^2,
@@ -96,10 +96,10 @@ Higher dimensional cases can be derived in the same manner:
     U
     &
     =
-    \mysum{k_y}{0}{\infty}
-    \mysum{k_x}{0}{\infty}
-    \frac{L_x}{2}
-    \frac{L_y}{2}
+    \mysum{k_y}{-\infty}{\infty}
+    \mysum{k_x}{-\infty}{\infty}
+    L_x
+    L_y
     \frac{1}{2}
     \rho
     C_{k_x, k_y}
