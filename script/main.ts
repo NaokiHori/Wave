@@ -1,6 +1,7 @@
 import wbgInit, { Simulator, InitOutput, Metrics } from "../pkg/wave";
-import { getCanvasElement } from "./dom";
+import { getCanvasElement, syncCanvasSize } from "./dom";
 import { CanvasDrawer } from "./canvasDrawer";
+import { WebGLDrawer, isWebGLDrawerAvailable } from "./webGLDrawer";
 import { Timer } from "./timer";
 
 function logging(simulator: Simulator) {
@@ -22,8 +23,8 @@ window.addEventListener("load", () => {
       // prepare destination
       const canvas: HTMLCanvasElement = getCanvasElement("my-canvas");
       // decide domain aspect ratio based on the initial user screen size
-      const canvasRect: DOMRect = canvas.getBoundingClientRect();
-      const canvasAspectRatio: number = canvasRect.width / canvasRect.height;
+      syncCanvasSize(canvas);
+      const canvasAspectRatio: number = canvas.width / canvas.height;
       // prepare simulator
       const randomSeed: bigint = (function (): bigint {
         const min = 0;
@@ -48,11 +49,20 @@ window.addEventListener("load", () => {
         dt_max,
       );
       // initialize drawer
-      const canvasDrawer = new CanvasDrawer(canvas, scalarGridPoints);
-      // register on-resize event
+      const drawer: CanvasDrawer | WebGLDrawer = (function initializeDrawer() {
+        if (isWebGLDrawerAvailable(canvas)) {
+          console.log("Use WebGL2 rendering");
+          const drawer = new WebGLDrawer(canvas, scalarGridPoints);
+          return drawer;
+        } else {
+          console.log("WebGL2 is not available: Use canvas rendering");
+          const drawer = new CanvasDrawer(canvas, scalarGridPoints);
+          return drawer;
+        }
+      })();
       window.addEventListener("resize", () => {
-        // adjust canvas size and paddings inside canvas accordingly
-        canvasDrawer.handleWindowResize();
+        syncCanvasSize(canvas);
+        drawer.handleWindowResize();
       });
       // rendering loop
       const timer = new Timer({
@@ -63,12 +73,13 @@ window.addEventListener("load", () => {
       });
       function updateAndDraw() {
         simulator.integrate();
-        canvasDrawer.draw(wbgModule.memory.buffer, simulator.get_pos());
+        drawer.draw(wbgModule.memory.buffer, simulator.get_pos());
         timer.update();
         requestAnimationFrame(updateAndDraw);
       }
       // trigger first rendering
       timer.start();
+      drawer.handleWindowResize();
       updateAndDraw();
     })
     .catch((error: unknown) => {

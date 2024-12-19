@@ -5,3 +5,11 @@ export function getCanvasElement(id: string): HTMLCanvasElement {
   }
   return canvas as HTMLCanvasElement;
 }
+
+export function syncCanvasSize(canvas: HTMLCanvasElement) {
+  const rect: DOMRect = canvas.getBoundingClientRect();
+  const width: number = rect.width;
+  const height: number = rect.height;
+  canvas.width = width;
+  canvas.height = height;
+}

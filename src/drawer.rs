@@ -35,6 +35,18 @@ impl Drawer {
         }
         pixels.as_ptr()
     }
+
+    pub fn pixelize_webgl(&mut self, array_ptr: *const f64) -> *const u8 {
+        let nitems: &[usize; 2] = &self.nitems;
+        let array: &[f64] = unsafe { std::slice::from_raw_parts(array_ptr, nitems[0] * nitems[1]) };
+        let pixels: &mut [u8] = &mut self.buf;
+        let minmax: &mut [f64; 2] = &mut self.minmax;
+        get_minmax(array, minmax);
+        for n in 0..(nitems[0] * nitems[1]) {
+            pixels[n] = (255f64 * (array[n] - minmax[0]) / (minmax[1] - minmax[0])) as u8;
+        }
+        pixels.as_ptr()
+    }
 }
 
 fn get_minmax(array: &[f64], minmax: &mut [f64; 2]) {
