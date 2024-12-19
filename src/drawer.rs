@@ -1,35 +1,39 @@
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
 pub struct Drawer {
     nitems: [usize; 2],
     minmax: [f64; 2],
-    data: Vec<u8>,
+    buf: Vec<u8>,
 }
 
+#[wasm_bindgen]
 impl Drawer {
-    pub fn new(nitems: &[usize; 2]) -> Self {
-        let data = vec![0u8; nitems[0] * nitems[1] * "rgba".len()];
+    #[wasm_bindgen(constructor)]
+    pub fn new(nitems: &[u32]) -> Self {
+        let nitems: [usize; 2] = [nitems[0].try_into().unwrap(), nitems[1].try_into().unwrap()];
+        let buf = vec![0u8; nitems[0] * nitems[1] * "rgba".len()];
         let minmax: [f64; 2] = [f64::MAX, f64::MIN];
         Self {
-            nitems: *nitems,
+            nitems,
             minmax,
-            data,
+            buf,
         }
     }
 
-    pub fn draw(&mut self, array: &[f64]) {
+    pub fn pixelize(&mut self, array_ptr: *const f64) -> *const u8 {
         let nitems: &[usize; 2] = &self.nitems;
-        let data: &mut [u8] = &mut self.data;
+        let array: &[f64] = unsafe { std::slice::from_raw_parts(array_ptr, nitems[0] * nitems[1]) };
+        let pixels: &mut [u8] = &mut self.buf;
         let minmax: &mut [f64; 2] = &mut self.minmax;
         get_minmax(array, minmax);
         for n in 0..(nitems[0] * nitems[1]) {
             // NOTE: assuming array is normalized in [-1, 1]
             let val: f64 = 2f64 * (array[n] - minmax[0]) / (minmax[1] - minmax[0]) - 1f64;
-            value_to_color(val, &mut data[4 * n..4 * n + 3]);
-            data[4 * n + 3] = 255u8;
+            value_to_color(val, &mut pixels[4 * n..4 * n + 3]);
+            pixels[4 * n + 3] = 255u8;
         }
-    }
-
-    pub fn pixels(&self) -> *const u8 {
-        self.data.as_ptr()
+        pixels.as_ptr()
     }
 }
 
