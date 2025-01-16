@@ -49,10 +49,7 @@ export class WebGLDrawer {
       new Float32Array(positions.flat()),
     );
     // create and upload the scalar field as a texture
-    const scalarTexture: WebGLTexture | null = gl.createTexture();
-    if (null === scalarTexture) {
-      throw new Error("failed to create a texture");
-    }
+    const scalarTexture: WebGLTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, scalarTexture);
     gl.texImage2D(
       gl.TEXTURE_2D,
@@ -111,7 +108,7 @@ export class WebGLDrawer {
     const scalarTexture: WebGLTexture = this._scalarTexture;
     const scalarWidth: number = this._scalarWidth;
     const scalarHeight: number = this._scalarHeight;
-    const offsetOfPixels: number = drawer.pixelize_webgl(ptrToPositions);
+    const offsetOfPixels: number = drawer.pixelize(ptrToPositions);
     const pixels = new Uint8Array(
       wasmMemory,
       offsetOfPixels,
