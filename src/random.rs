@@ -48,7 +48,7 @@ impl Random {
     ///     return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
     /// }
     /// ```
-    pub fn gen_range(&mut self, min: f64, max: f64) -> f64 {
+    pub fn gen_range(&mut self, min: f32, max: f32) -> f32 {
         // PCG algorithm
         let old_state: u64 = self.state;
         self.state = old_state
@@ -58,7 +58,7 @@ impl Random {
         let rot: u32 = old_state.wrapping_shr(59) as u32;
         let val: u32 =
             xor_shifted.wrapping_shr(rot) | xor_shifted.wrapping_shl((u32::MAX - rot) & 31);
-        // cast it into f64
-        min + (max - min) * (val as f64 / u32::MAX as f64)
+        // cast it into f32
+        min + (max - min) * (val as f32 / u32::MAX as f32)
     }
 }

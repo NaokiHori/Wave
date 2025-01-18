@@ -1,15 +1,15 @@
 pub struct Timer {
-    next: f64,
-    freq: f64,
+    next: f32,
+    freq: f32,
 }
 
 impl Timer {
-    pub fn new(freq: f64) -> Self {
-        let next: f64 = freq;
+    pub fn new(freq: f32) -> Self {
+        let next: f32 = freq;
         Self { next, freq }
     }
 
-    pub fn next(&self) -> f64 {
+    pub fn next(&self) -> f32 {
         self.next
     }
 

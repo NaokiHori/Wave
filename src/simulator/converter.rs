@@ -8,7 +8,7 @@ use rdft::RdftPlan;
 pub struct Converter {
     rdft_plans: [RdftPlan; NDIMS],
     nitems: [usize; NDIMS],
-    buffer: Vec<f64>,
+    buffer: Vec<f32>,
 }
 
 impl Converter {
@@ -17,7 +17,7 @@ impl Converter {
             RdftPlan::new(nitems[0]).unwrap(),
             RdftPlan::new(nitems[1]).unwrap(),
         ];
-        let buffer = vec![0f64; nitems[0] * nitems[1]];
+        let buffer = vec![0f32; nitems[0] * nitems[1]];
         Self {
             rdft_plans,
             nitems: *nitems,
@@ -25,7 +25,7 @@ impl Converter {
         }
     }
 
-    pub fn phys_to_freq(&mut self, phys: &[f64], freq: &mut [f64]) {
+    pub fn phys_to_freq(&mut self, phys: &[f32], freq: &mut [f32]) {
         let nitems: &[usize; NDIMS] = &self.nitems;
         let nitems_total: usize = nitems[0] * nitems[1];
         let buffer = &mut self.buffer;
@@ -39,7 +39,7 @@ impl Converter {
         }
     }
 
-    pub fn freq_to_phys(&mut self, freq: &[f64], phys: &mut [f64]) {
+    pub fn freq_to_phys(&mut self, freq: &[f32], phys: &mut [f32]) {
         let nitems: &[usize; NDIMS] = &self.nitems;
         let nitems_total: usize = nitems[0] * nitems[1];
         let buffer = &mut self.buffer;
@@ -54,7 +54,7 @@ impl Converter {
     }
 }
 
-fn transpose(nx: usize, ny: usize, bef: &[f64], aft: &mut [f64]) {
+fn transpose(nx: usize, ny: usize, bef: &[f32], aft: &mut [f32]) {
     for j in 0..ny {
         for i in 0..nx {
             aft[i * ny + j] = bef[j * nx + i];
@@ -69,14 +69,14 @@ mod test {
     fn check() {
         let nx = 3usize;
         let ny = 2usize;
-        let bef = [0f64, 1f64, 2f64, 3f64, 4f64, 5f64];
-        let mut aft = vec![0f64; nx * ny];
+        let bef = [0f32, 1f32, 2f32, 3f32, 4f32, 5f32];
+        let mut aft = vec![0f32; nx * ny];
         transpose(nx, ny, &bef, &mut aft);
-        assert!(0f64 == aft[0]);
-        assert!(3f64 == aft[1]);
-        assert!(1f64 == aft[2]);
-        assert!(4f64 == aft[3]);
-        assert!(2f64 == aft[4]);
-        assert!(5f64 == aft[5]);
+        assert!(0f32 == aft[0]);
+        assert!(3f32 == aft[1]);
+        assert!(1f32 == aft[2]);
+        assert!(4f32 == aft[3]);
+        assert!(2f32 == aft[4]);
+        assert!(5f32 == aft[5]);
     }
 }

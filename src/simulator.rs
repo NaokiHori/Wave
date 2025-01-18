@@ -17,21 +17,21 @@ pub const NDIMS: usize = 2;
 
 #[wasm_bindgen]
 pub struct Config {
-    lengths: [f64; NDIMS],
+    lengths: [f32; NDIMS],
     nitems: [usize; NDIMS],
-    param_c2: f64,
-    param_nu: f64,
+    param_c2: f32,
+    param_nu: f32,
 }
 
 #[wasm_bindgen]
 pub struct Simulator {
-    time: f64,
+    time: f32,
     config: Config,
     rng: Random,
     converter: Converter,
     field: Field,
     source: Source,
-    dt: f64,
+    dt: f32,
     iter_max: u32,
 }
 
@@ -40,13 +40,13 @@ impl Simulator {
     #[wasm_bindgen(constructor)]
     pub fn new(
         random_seed: u64,
-        lengths: &[f64],
+        lengths: &[f32],
         nitems: &[u32],
-        param_c2: f64,
-        param_nu: f64,
-        dt_max: f64,
+        param_c2: f32,
+        param_nu: f32,
+        dt_max: f32,
     ) -> Self {
-        let lengths: [f64; 2] = [lengths[0], lengths[1]];
+        let lengths: [f32; 2] = [lengths[0], lengths[1]];
         let nitems: [usize; 2] = [nitems[0].try_into().unwrap(), nitems[1].try_into().unwrap()];
         let config = Config {
             lengths,
@@ -54,7 +54,7 @@ impl Simulator {
             param_c2,
             param_nu,
         };
-        let time = 0f64;
+        let time = 0f32;
         let mut rng = Random::new(random_seed);
         let mut converter = Converter::new(&config.nitems);
         let field = Field::new(&config, &mut converter);
@@ -75,7 +75,7 @@ impl Simulator {
     }
 
     pub fn integrate(&mut self) {
-        let time: &mut f64 = &mut self.time;
+        let time: &mut f32 = &mut self.time;
         for _ in 0..self.iter_max {
             integrate::integrate(
                 &self.config,
@@ -92,22 +92,22 @@ impl Simulator {
         metrics::get(self)
     }
 
-    pub fn get_pos(&mut self) -> *const f64 {
-        let pos_phys: &mut [f64] = &mut self.field.buf;
+    pub fn get_pos(&mut self) -> *const f32 {
+        let pos_phys: &mut [f32] = &mut self.field.pos_phys;
         self.converter.freq_to_phys(&self.field.pos, pos_phys);
         pos_phys.as_ptr()
     }
 
-    pub fn get_dt(&self) -> f64 {
+    pub fn get_dt(&self) -> f32 {
         self.dt
     }
 }
 
-fn decide_dt(config: &Config, dt: &mut f64) {
+fn decide_dt(config: &Config, dt: &mut f32) {
     // NOTE: maximum dt is given by the user
     for dim in 0..NDIMS {
-        let length: f64 = config.lengths[dim];
+        let length: f32 = config.lengths[dim];
         let nitems: usize = config.nitems[dim];
-        *dt = (*dt).min(length / nitems as f64 / config.param_c2.sqrt());
+        *dt = (*dt).min(length / nitems as f32 / config.param_c2.sqrt());
     }
 }

@@ -1,16 +1,21 @@
 #version 300 es
 
-precision mediump float;
+precision highp float;
+precision highp sampler2D;
 
-uniform vec2 u_scale;
+uniform mat4 u_mvp_matrix;
+uniform ivec2 u_scalar_grid;
+uniform sampler2D u_scalar_height;
 
 in vec2 a_position;
-in vec2 a_texture_coordinates;
 
-out vec2 v_texture_coordinates;
+out float v_height;
 
 void main(void) {
-  v_texture_coordinates = a_texture_coordinates;
-  gl_Position = vec4(a_position * u_scale, 0., 1.);
+  int i = gl_VertexID % u_scalar_grid[0];
+  int j = gl_VertexID / u_scalar_grid[0];
+  float z = texelFetch(u_scalar_height, ivec2(i, j), 0).r;
+  v_height = z;
+  gl_Position = u_mvp_matrix * vec4(a_position, 5. * z, 1.);
 }
 

@@ -1,8 +1,8 @@
 function initShader(
-  gl: WebGL2RenderingContext,
+  gl: WebGLRenderingContext | WebGL2RenderingContext,
   type:
-    | WebGL2RenderingContext["FRAGMENT_SHADER"]
-    | WebGL2RenderingContext["VERTEX_SHADER"],
+    | (WebGLRenderingContext | WebGL2RenderingContext)["FRAGMENT_SHADER"]
+    | (WebGLRenderingContext | WebGL2RenderingContext)["VERTEX_SHADER"],
   source: string,
 ): WebGLShader {
   // creates a shader of the given type
@@ -22,50 +22,63 @@ function initShader(
   return shader;
 }
 
-export function initProgram({
-  gl,
-  vertexShaderSource,
-  fragmentShaderSource,
-  transformFeedbackVaryings,
-}: {
-  gl: WebGL2RenderingContext;
-  vertexShaderSource: string;
-  fragmentShaderSource: string;
-  transformFeedbackVaryings: string[];
-}): WebGLProgram {
-  const vertexShader: WebGLShader = initShader(
+export class Program {
+  private _program: WebGLProgram;
+
+  public constructor({
     gl,
-    gl.VERTEX_SHADER,
     vertexShaderSource,
-  );
-  const fragmentShader: WebGLShader = initShader(
-    gl,
-    gl.FRAGMENT_SHADER,
     fragmentShaderSource,
-  );
-  const program: WebGLProgram | null = gl.createProgram();
-  if (null === program) {
-    throw new Error("gl.createProgram failed");
-  }
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  if (0 < transformFeedbackVaryings.length) {
-    if (gl instanceof WebGLRenderingContext) {
-      gl.deleteProgram(program);
-      throw new Error("WebGL1 does not support transform feedback");
-    }
-    gl.transformFeedbackVaryings(
-      program,
-      transformFeedbackVaryings,
-      gl.SEPARATE_ATTRIBS,
+    transformFeedbackVaryings,
+  }: {
+    gl: WebGLRenderingContext | WebGL2RenderingContext;
+    vertexShaderSource: string;
+    fragmentShaderSource: string;
+    transformFeedbackVaryings: string[];
+  }) {
+    const vertexShader: WebGLShader = initShader(
+      gl,
+      gl.VERTEX_SHADER,
+      vertexShaderSource,
     );
+    const fragmentShader: WebGLShader = initShader(
+      gl,
+      gl.FRAGMENT_SHADER,
+      fragmentShaderSource,
+    );
+    const program: WebGLProgram = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    if (0 < transformFeedbackVaryings.length) {
+      if (gl instanceof WebGLRenderingContext) {
+        gl.deleteProgram(program);
+        throw new Error("WebGL1 does not support transform feedback");
+      }
+      gl.transformFeedbackVaryings(
+        program,
+        transformFeedbackVaryings,
+        gl.SEPARATE_ATTRIBS,
+      );
+    }
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      const info: string = gl.getProgramInfoLog(program) ?? "unknown message";
+      gl.deleteProgram(program);
+      throw new Error(`Failed to link program: ${info}`);
+    }
+    this._program = program;
   }
-  gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    const info: string = gl.getProgramInfoLog(program) ?? "unknown message";
-    gl.deleteProgram(program);
-    throw new Error(`gl.attachShader / gl.linkProgram failed: ${info}`);
+
+  public use<T>({
+    gl,
+    callback,
+  }: {
+    gl: WebGLRenderingContext | WebGL2RenderingContext;
+    callback: (program: WebGLProgram) => T;
+  }): T {
+    gl.useProgram(this._program);
+    const resultOfCallback: T = callback(this._program);
+    gl.useProgram(null);
+    return resultOfCallback;
   }
-  gl.useProgram(program);
-  return program;
 }
